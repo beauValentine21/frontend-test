@@ -1,8 +1,8 @@
 import React from 'react';
 import { render } from 'react-dom';
 import { Router } from "@reach/router"
-import { Home } from './components/Home';
-import { Review } from './components/Review';
+import { Home } from './pages/Home';
+import { Review } from './pages/Review';
 import './styles';
 
 render(
