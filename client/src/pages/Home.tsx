@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import ErrorBoundary from '../components/ErrorBoundary';
 import { FilterBar } from '../components/FilterBar';
 import '../styles/home';

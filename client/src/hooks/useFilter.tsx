@@ -1,6 +1,7 @@
 import { useEffect, useReducer } from 'react';
 import axios from 'axios';
 
+// todo lift this hook into context so that it maintains state across page navigation
 type RestaurantCategory = {
   alias: string;
   title: string;
@@ -36,7 +37,7 @@ type Restaurant = {
   distance: number;
 }
 
-type FilterBarState = {
+type FilterState = {
   categories: Array<RestaurantCategory>;
   restaurants: Array<Restaurant>;
   shouldShowOpenOnly: boolean;
@@ -44,12 +45,12 @@ type FilterBarState = {
   price: string;
 }
 
-interface FilterBarAction {
+interface FilterAction {
   type: string;
   payload?: any;
 }
 
-const initialState: FilterBarState = {
+const initialState: FilterState = {
   shouldShowOpenOnly: false,
   restaurants: [],
   categories: [],
@@ -57,10 +58,10 @@ const initialState: FilterBarState = {
   price: ''
 };
 
-const filterBarReducer = (
-  state: FilterBarState,
-  action: FilterBarAction
-): FilterBarState => {
+const filterReducer = (
+  state: FilterState,
+  action: FilterAction
+): FilterState => {
   switch (action.type) {
     case 'UPDATE_SHOULD_SHOW_OPEN_ONLY':
       return { ...state, shouldShowOpenOnly: action.payload };
@@ -78,25 +79,19 @@ const filterBarReducer = (
 };
 
 export const useFilter = () => {
-  const [filterState, filterDispatch] = useReducer(filterBarReducer, initialState);
+  const [filterState, filterDispatch] = useReducer(filterReducer, initialState);
 
   // TODO implement effect for fetching restaurants and categories on mount
   useEffect(() => {
     fetchRestaurants();
     fetchCategories();
     // fetch restaurants
-    // fetch categories
   }, []);
 
-  // TODO implement effect for client side filtering restraunts when price or shouldShowOpenOnly change
+  // TODO implement effect for client side filtering restraunts when price, shouldShowOpenOnly, category change
   useEffect(() => {
     // fetch restaurants
-  }, [filterState.price, filterState.shouldShowOpenOnly]);
-
-  // TODO implement effect for server side filtering restraunts when category change
-  useEffect(() => {
-    // fetch restaurants
-  }, [filterState.category]);
+  }, [filterState.price, filterState.shouldShowOpenOnly, filterState.category]);
 
   const fetchRestaurants = async (): Promise<void> => {
     try {
@@ -118,12 +113,24 @@ export const useFilter = () => {
         type: 'UPDATE_CATEGORIES',
         payload: data
       });
-      // console.log(`categories length -> ${JSON.stringify(data.length, null, 2)}`);
+      console.log(`categories length -> ${JSON.stringify(data.length, null, 2)}`);
       // console.log(`categories -> ${JSON.stringify(data, null, 2)}`);
     } catch (error) {
       console.error(error);
     }
   };
 
+  const filterByPrice = (price: string, restaurants: Restaurant[]): Restaurant[] => {
+    const matchesPrice = (restaurant: Restaurant) => restaurant.price === price;
+    // only return restaurants that match the provided price;
+    return restaurants.filter(matchesPrice);
+  };
+
+  const filterIfOpen = (restaurants: Restaurant[]): Restaurant[] => {
+    const isOpen = (restaurant: Restaurant) => !restaurant.is_closed;
+    // only return restaurants that are open
+    return restaurants.filter(isOpen);
+  }
+
   return { filterState, filterDispatch };
-}
+};

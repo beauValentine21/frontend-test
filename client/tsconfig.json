@@ -4,10 +4,11 @@
     "jsx": "react",
     "module": "commonjs",
     "lib": [
-      "es2015"
+      "es2015",
+      "dom"
     ],
     "noImplicitAny": true,
-    "outDir": "./build/",
+    "outDir": "build",
     "preserveConstEnums": true,
     "removeComments": true,
     "sourceMap": true,
@@ -15,6 +16,6 @@
     "target": "es5"
   },
   "include": [
-    "./src/**/*"
+    "src/**/*"
   ]
 }
