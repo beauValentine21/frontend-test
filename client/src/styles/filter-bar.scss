@@ -1,0 +1,21 @@
+@import 'typography';
+@import 'colors';
+
+.filter-bar-container {
+  border-top: 1px solid #E6E6E6;
+  border-bottom: 1px solid #E6E6E6;
+  padding-bottom: 1.35em;
+  height: 3em;
+  display: flex;
+  align-items: baseline;
+}
+
+#filter-title {
+  color: $lightGrey;
+  font-size: $mediumText;
+}
+
+#open-now-text {
+  color: $grey;
+  font-size: $mediumText;
+}

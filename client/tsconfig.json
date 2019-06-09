@@ -3,6 +3,9 @@
     "allowSyntheticDefaultImports": true,
     "jsx": "react",
     "module": "commonjs",
+    "lib": [
+      "es2015"
+    ],
     "noImplicitAny": true,
     "outDir": "./build/",
     "preserveConstEnums": true,
