@@ -27,12 +27,13 @@ app.get('/restaurants', async (req, res) => {
     });
     res.send(data);
   } catch (error) {
-    res.status(500).json(error);
+    res
+      .status(error.status || 500)
+      .json({ status: error.status, message: error.message });
   }
 });
 
 app.get('/categories', async (req, res) => {
-  // TODO implement filter to only send back results for restaurant
   try {
     const { data } = await axios({
       url: 'https://api.yelp.com/v3/categories?local=en_US',
@@ -41,9 +42,24 @@ app.get('/categories', async (req, res) => {
         Authorization: `Bearer ${process.env.YELP_TOKEN}`
       }
     });
-    res.send(data);
+
+    // predicate for finding only listings that have a parent_aliases which includes 'restaurants'
+    const restaurantsOnly = element =>
+      element.parent_aliases.some(type => type === 'restaurants');
+
+    // filter collection with predicate above to only pass back results that belong to restaurants
+    const filteredCategories = data.categories.filter(restaurantsOnly);
+
+    // trim off excess info, only return alias and title per element
+    const formattedResults = filteredCategories.map(({ alias, title }) => ({
+      alias, title
+    }));
+
+    res.send(formattedResults);
   } catch (error) {
-    res.status(500).json(error);
+    res
+      .status(error.status || 500)
+      .json({ status: error.status, message: error.message });
   }
 });
 

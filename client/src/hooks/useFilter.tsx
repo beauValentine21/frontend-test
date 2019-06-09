@@ -99,21 +99,30 @@ export const useFilter = () => {
   }, [filterState.category]);
 
   const fetchRestaurants = async (): Promise<void> => {
-    const { data } = await axios.get('http://localhost:5000/restaurants');
-    filterDispatch({
-      type: 'UPDATE_RESTAURANTS',
-      payload: data.businesses
-    });
-    // console.log(`restaurants -> ${JSON.stringify(data.businesses, null, 2)}`);
+    try {
+      const { data } = await axios.get('http://localhost:5000/restaurants');
+      filterDispatch({
+        type: 'UPDATE_RESTAURANTS',
+        payload: data.businesses
+      });
+      // console.log(`restaurants -> ${JSON.stringify(data.businesses, null, 2)}`);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const fetchCategories = async (): Promise<void> => {
-    const { data } = await axios.get('http://localhost:5000/categories');
-    filterDispatch({
-      type: 'UPDATE_CATEGORIES',
-      payload: data.categories
-    });
-    console.log(`categories -> ${JSON.stringify(data, null, 2)}`);
+    try {
+      const { data } = await axios.get('http://localhost:5000/categories');
+      filterDispatch({
+        type: 'UPDATE_CATEGORIES',
+        payload: data
+      });
+      // console.log(`categories length -> ${JSON.stringify(data.length, null, 2)}`);
+      // console.log(`categories -> ${JSON.stringify(data, null, 2)}`);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return { filterState, filterDispatch };
