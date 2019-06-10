@@ -1,21 +1,16 @@
 @import 'typography';
 @import 'colors';
 
-.home-container {
-  padding: 0 2em;
-  overflow: hidden;
-}
-
 .heading-description {
   max-width: 35rem;
   color: $lightGrey;
-  font-weight: $headingWeight;
+  font-weight: $smallWeight;
   letter-spacing: 1px;
   margin-top: -1rem;
   margin-bottom: 1rem;
 }
 
 h1 {
-  font-weight: $headingWeight;
+  font-weight: $smallWeight;
   font-size: $headingSize;
 }

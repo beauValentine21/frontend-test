@@ -1,4 +1,4 @@
-import { useEffect, useReducer } from 'react';
+import { useEffect, useReducer, useCallback } from 'react';
 import axios from 'axios';
 import isEmpty from 'lodash.isempty';
 
@@ -8,7 +8,7 @@ type RestaurantCategory = {
   title: string;
 }
 
-type Restaurant = {
+export type Restaurant = {
   id: string;
   name: string;
   image_url: string;

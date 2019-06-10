@@ -1,4 +1,5 @@
 import React, { useContext, useState } from 'react';
+import { navigate } from '@reach/router';
 import Button from '@material-ui/core/Button';
 import ReactStars from 'react-stars';
 import take from 'lodash.take';
@@ -39,7 +40,12 @@ export const Gallery = () => {
                 <div>{trimTitle(restaurant.categories[0].title, 8)} - {restaurant.price}</div>
                 <div className="bullet-status-open">OPEN NOW</div>
               </div>
-              <Button variant="contained" color="primary" className="learn-more-btn">
+              <Button
+                variant="contained"
+                color="primary"
+                className="learn-more-btn"
+                onClick={() => navigate(`/listing/${restaurant.id}`)}
+              >
                 Learn More
               </Button>
             </div>

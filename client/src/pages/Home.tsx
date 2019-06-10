@@ -3,7 +3,8 @@ import { RestaurantProvider } from '../context/RestaurantContext';
 import ErrorBoundary from '../components/ErrorBoundary';
 import { FilterBar } from '../components/FilterBar';
 import { Gallery } from '../components/Gallery';
-import '../styles/home';
+import '../styles/layout';
+import '../styles/heading';
 
 export const Home = (props: any) => {
 
@@ -14,7 +15,7 @@ export const Home = (props: any) => {
   `;
 
   return (
-    <div className="home-container">
+    <div className="content-container">
       <h1>Restaurants</h1>
       <div className="heading-description">{headingText}</div>
       <RestaurantProvider>

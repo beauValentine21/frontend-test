@@ -4,7 +4,7 @@ import { Router } from "@reach/router"
 
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 
-import { Review } from './pages/Review';
+import { SingleListing } from './pages/SingleListing';
 import { Home } from './pages/Home';
 import './styles';
 
@@ -29,7 +29,7 @@ render(
   <MuiThemeProvider theme={customTheme}>
     <Router>
       <Home path="/" />
-      <Review path="review" />
+      <SingleListing path="listing/:id" />
     </Router>
   </MuiThemeProvider>
   , document.querySelector('.root'));

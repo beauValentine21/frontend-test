@@ -1,0 +1,43 @@
+@import 'typography';
+
+#single-listing-header {
+  font-weight: $smallWeight;
+  font-size: $headingSize;
+  margin-bottom: -.1rem;
+}
+
+#review-count {
+  font-size: $smallText;
+  font-weight: $mediumWeight;
+}
+
+#meta {
+  padding: .75em 0;
+  border-bottom: 1px solid #E6E6E6;
+}
+
+.review-card-container {
+  display: flex;
+  justify-content: space-between;
+
+
+  .review-content {
+    max-width: 400px;
+  }
+
+  .reviewer-image {
+    padding-top: 1rem;
+  }
+
+  .reviewer-profile {
+    display: flex;
+    flex-flow: column;
+    padding-top: 1rem;
+  }
+
+  .user-thumbnail {
+    height: 5rem;
+    width: 5rem;
+    border-radius: 50%;
+  }
+}

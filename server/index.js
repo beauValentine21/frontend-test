@@ -16,12 +16,45 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.get('/yelp/:category', async (req, res) => {
-  // TODO implement filters for yelp
   const categoryType = req.params.category || 'restaurants';
 
   try {
     const { data } = await axios({
       url: `https://api.yelp.com/v3/businesses/search?term=restaurants&location=las_vegas&$price=1,2,3,4&categories=${categoryType}`,
+      method: 'get',
+      headers: {
+        Authorization: `Bearer ${process.env.YELP_TOKEN}`
+      }
+    });
+    res.send(data);
+  } catch (error) {
+    res
+      .status(error.status || 500)
+      .json({ status: error.status, message: error.message });
+  }
+});
+
+app.get('/yelp/listing/:id', async (req, res) => {
+  try {
+    const { data } = await axios({
+      url: `https://api.yelp.com/v3/businesses/${req.params.id}`,
+      method: 'get',
+      headers: {
+        Authorization: `Bearer ${process.env.YELP_TOKEN}`
+      }
+    });
+    res.send(data);
+  } catch (error) {
+    res
+      .status(error.status || 500)
+      .json({ status: error.status, message: error.message });
+  }
+});
+
+app.get('/yelp/reviews/:id', async (req, res) => {
+  try {
+    const { data } = await axios({
+      url: `https://api.yelp.com/v3/businesses/${req.params.id}/reviews`,
       method: 'get',
       headers: {
         Authorization: `Bearer ${process.env.YELP_TOKEN}`
