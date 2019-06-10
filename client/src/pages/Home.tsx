@@ -1,6 +1,8 @@
 import React from 'react';
+import { RestaurantProvider } from '../context/RestaurantContext';
 import ErrorBoundary from '../components/ErrorBoundary';
 import { FilterBar } from '../components/FilterBar';
+import { Gallery } from '../components/Gallery';
 import '../styles/home';
 
 export const Home = (props: any) => {
@@ -15,9 +17,14 @@ export const Home = (props: any) => {
     <div className="home-container">
       <h1>Restaurants</h1>
       <div className="heading-description">{headingText}</div>
-      <ErrorBoundary componentName="FilterBar">
-        <FilterBar />
-      </ErrorBoundary>
+      <RestaurantProvider>
+        <ErrorBoundary componentName="FilterBar">
+          <FilterBar />
+        </ErrorBoundary>
+        <ErrorBoundary componentName="Gallery">
+          <Gallery />
+        </ErrorBoundary>
+      </RestaurantProvider>
     </div>
   )
 };

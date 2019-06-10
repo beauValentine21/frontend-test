@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
@@ -8,7 +9,7 @@ import IconButton from '@material-ui/core/IconButton';
 import Icon from '@material-ui/core/Icon';
 import '../styles/filter-bar';
 
-import { useFilter } from '../hooks/useFilter';
+import { RestaurantContext } from '../context/RestaurantContext';
 
 const useStyles = makeStyles({
   priceSelection: {
@@ -23,13 +24,26 @@ const useStyles = makeStyles({
 
 export const FilterBar = () => {
   const classes = useStyles();
-  const { filterState, filterDispatch } = useFilter();
+  const { filterState, filterDispatch } = useContext(RestaurantContext);
+
+  // render category selection from server side fetch
+  const renderCategories = () =>
+    filterState.categories && filterState.categories.map(category => (
+      <MenuItem key={category.alias} value={category.alias}>
+        {category.title}
+      </MenuItem>
+    ));
 
   return (
     <div className="filter-bar-container">
       <div id="filter-title">Filter By:</div>
       <div>
-        <IconButton onClick={() => filterDispatch({ type: 'UPDATE_SHOULD_SHOW_OPEN_ONLY', payload: !state.shouldShowOpenOnly })}>
+        <IconButton onClick={() =>
+          filterDispatch({
+            type: 'UPDATE_SHOULD_SHOW_OPEN_ONLY',
+            payload: !filterState.shouldShowOpenOnly
+          })
+        }>
           {filterState.shouldShowOpenOnly
             ?
             <Icon fontSize="small" color="primary">radio_button_checked</Icon>
@@ -78,11 +92,12 @@ export const FilterBar = () => {
           <MenuItem value="">
             <em>None</em>
           </MenuItem>
-          <MenuItem value={10}>Ten</MenuItem>
-          <MenuItem value={20}>Twenty</MenuItem>
-          <MenuItem value={30}>Thirty</MenuItem>
+          {renderCategories()}
         </Select>
       </FormControl>
+      {filterState.isLoadingRestaurants &&
+        <CircularProgress style={{ marginLeft: '1em' }} color="secondary" />
+      }
     </div>
   );
 };

@@ -1,5 +1,6 @@
 import { useEffect, useReducer } from 'react';
 import axios from 'axios';
+import isEmpty from 'lodash.isempty';
 
 // todo lift this hook into context so that it maintains state across page navigation
 type RestaurantCategory = {
@@ -37,9 +38,10 @@ type Restaurant = {
   distance: number;
 }
 
-type FilterState = {
+export type FilterState = {
   categories: Array<RestaurantCategory>;
   restaurants: Array<Restaurant>;
+  isLoadingRestaurants: boolean;
   shouldShowOpenOnly: boolean;
   category: string;
   price: string;
@@ -51,6 +53,7 @@ interface FilterAction {
 }
 
 const initialState: FilterState = {
+  isLoadingRestaurants: false,
   shouldShowOpenOnly: false,
   restaurants: [],
   categories: [],
@@ -63,6 +66,8 @@ const filterReducer = (
   action: FilterAction
 ): FilterState => {
   switch (action.type) {
+    case 'UPDATE_IS_LOADING_RESTAURANTS':
+      return { ...state, isLoadingRestaurants: action.payload };
     case 'UPDATE_SHOULD_SHOW_OPEN_ONLY':
       return { ...state, shouldShowOpenOnly: action.payload };
     case 'UPDATE_SELECTED_CATEGORY':
@@ -81,26 +86,73 @@ const filterReducer = (
 export const useFilter = () => {
   const [filterState, filterDispatch] = useReducer(filterReducer, initialState);
 
-  // TODO implement effect for fetching restaurants and categories on mount
+  // effect for fetching restaurants and categories on mount
   useEffect(() => {
-    fetchRestaurants();
     fetchCategories();
-    // fetch restaurants
+    let restaurantCollection;
+
+    filterDispatch({
+      type: 'UPDATE_IS_LOADING_RESTAURANTS',
+      payload: true
+    });
+
+    fetchRestaurants(filterState.category)
+      .then(results => {
+        restaurantCollection = results;
+
+        filterDispatch({
+          type: 'UPDATE_RESTAURANTS',
+          payload: restaurantCollection
+        });
+        filterDispatch({
+          type: 'UPDATE_IS_LOADING_RESTAURANTS',
+          payload: false
+        });
+      });
   }, []);
 
-  // TODO implement effect for client side filtering restraunts when price, shouldShowOpenOnly, category change
   useEffect(() => {
-    // fetch restaurants
-  }, [filterState.price, filterState.shouldShowOpenOnly, filterState.category]);
-
-  const fetchRestaurants = async (): Promise<void> => {
-    try {
-      const { data } = await axios.get('http://localhost:5000/restaurants');
+    if (!isEmpty(filterState.price)) {
       filterDispatch({
         type: 'UPDATE_RESTAURANTS',
-        payload: data.businesses
+        payload: filterByPrice(filterState.price)
       });
-      // console.log(`restaurants -> ${JSON.stringify(data.businesses, null, 2)}`);
+    }
+  }, [filterState.price]);
+
+  useEffect(() => {
+    if (filterState.shouldShowOpenOnly) {
+      filterDispatch({
+        type: 'UPDATE_RESTAURANTS',
+        payload: filterIfOpen()
+      });
+    }
+  }, [filterState.shouldShowOpenOnly]);
+
+  // effect to refetch restaurants filtered by selected category, server side
+  useEffect(() => {
+    filterDispatch({
+      type: 'UPDATE_IS_LOADING_RESTAURANTS',
+      payload: true
+    });
+    fetchRestaurants(filterState.category)
+      .then(results => {
+        filterDispatch({
+          type: 'UPDATE_RESTAURANTS',
+          payload: results
+        });
+        filterDispatch({
+          type: 'UPDATE_IS_LOADING_RESTAURANTS',
+          payload: false
+        });
+      });
+  }, [filterState.category])
+
+  const fetchRestaurants = async (category: string): Promise<Restaurant[]> => {
+    const categoryType: string = isEmpty(category) ? 'restaurants' : category;
+    try {
+      const { data } = await axios.get(`http://localhost:5000/yelp/${categoryType}`);
+      return data.businesses;
     } catch (error) {
       console.error(error);
     }
@@ -113,23 +165,24 @@ export const useFilter = () => {
         type: 'UPDATE_CATEGORIES',
         payload: data
       });
-      console.log(`categories length -> ${JSON.stringify(data.length, null, 2)}`);
-      // console.log(`categories -> ${JSON.stringify(data, null, 2)}`);
     } catch (error) {
       console.error(error);
     }
   };
 
-  const filterByPrice = (price: string, restaurants: Restaurant[]): Restaurant[] => {
+  const filterByPrice = (price: string): Restaurant[] => {
+    // if none or all is selected, don't bother filtering
+    if (price === 'all' || isEmpty(price)) return filterState.restaurants;
+
     const matchesPrice = (restaurant: Restaurant) => restaurant.price === price;
     // only return restaurants that match the provided price;
-    return restaurants.filter(matchesPrice);
+    return filterState.restaurants.filter(matchesPrice);
   };
 
-  const filterIfOpen = (restaurants: Restaurant[]): Restaurant[] => {
+  const filterIfOpen = (): Restaurant[] => {
     const isOpen = (restaurant: Restaurant) => !restaurant.is_closed;
     // only return restaurants that are open
-    return restaurants.filter(isOpen);
+    return filterState.restaurants.filter(isOpen);
   }
 
   return { filterState, filterDispatch };

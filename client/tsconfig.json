@@ -7,7 +7,6 @@
       "es2015",
       "dom"
     ],
-    "noImplicitAny": true,
     "outDir": "build",
     "preserveConstEnums": true,
     "removeComments": true,

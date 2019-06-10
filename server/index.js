@@ -15,11 +15,13 @@ const port = process.env.PORT || 5000;
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.get('/restaurants', async (req, res) => {
+app.get('/yelp/:category', async (req, res) => {
   // TODO implement filters for yelp
+  const categoryType = req.params.category || 'restaurants';
+
   try {
     const { data } = await axios({
-      url: `https://api.yelp.com/v3/businesses/search?term=restaurants&location=las_vegas&$price=1,2&category=Noodles`,
+      url: `https://api.yelp.com/v3/businesses/search?term=restaurants&location=las_vegas&$price=1,2,3,4&categories=${categoryType}`,
       method: 'get',
       headers: {
         Authorization: `Bearer ${process.env.YELP_TOKEN}`
